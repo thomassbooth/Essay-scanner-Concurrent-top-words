@@ -14,7 +14,6 @@ func FormatEssayUrls(path string) []string {
 
 func GenerateWordSet(path string) map[string]struct{} {
 	wordSet := map[string]struct{}{}
-
 	// Read the file into a byte slice
 	processFile(path, func(word string) {
 		wordSet[word] = struct{}{}
@@ -24,11 +23,11 @@ func GenerateWordSet(path string) map[string]struct{} {
 
 func main() {
 	wordSet := GenerateWordSet("assets/word-bank.txt")
-	urls := FormatEssayUrls("assets/endg-urls.txt")
-	processEssays(urls)
-	for _, url := range urls {
-		fmt.Println(url)
-	}
+	// urls := FormatEssayUrls("assets/endg-urls.txt")
+	// processEssays(urls)
+	// for _, url := range urls {
+	// 	fmt.Println(url)
+	// }
 	// Example: Check if a specific word is in the set
 	checkWord := "exampleeee"
 	// _ is the value, exists is the boolean
