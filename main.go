@@ -1,36 +1,34 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
-	"log"
-	"os"
 )
 
-func generateWordSet() map[string]struct{} {
+func FormatEssayUrls(path string) []string {
+	var urls []string
+	processFile(path, func(line string) {
+		urls = append(urls, line)
+	})
+	return urls
+}
+
+func GenerateWordSet(path string) map[string]struct{} {
 	wordSet := map[string]struct{}{}
 
 	// Read the file into a byte slice
-	fileContent, err := os.ReadFile("assets/word-bank.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Scan each word and add it to the set
-	reader := bytes.NewReader(fileContent)
-	scanner := bufio.NewScanner(reader)
-	for scanner.Scan() {
-		word := scanner.Text()
-		// We use an empty struct as the value to mimic a set
+	processFile(path, func(word string) {
 		wordSet[word] = struct{}{}
-	}
+	})
 	return wordSet
 }
 
 func main() {
-
-	wordSet := generateWordSet()
+	wordSet := GenerateWordSet("assets/word-bank.txt")
+	urls := FormatEssayUrls("assets/endg-urls.txt")
+	processEssays(urls)
+	for _, url := range urls {
+		fmt.Println(url)
+	}
 	// Example: Check if a specific word is in the set
 	checkWord := "exampleeee"
 	// _ is the value, exists is the boolean
