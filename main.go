@@ -4,27 +4,14 @@ import (
 	"fmt"
 )
 
-func FormatEssayUrls(path string) []string {
-	var urls []string
-	processFile(path, func(line string) {
-		urls = append(urls, line)
-	})
-	return urls
-}
-
-func GenerateWordSet(path string) map[string]struct{} {
-	wordSet := map[string]struct{}{}
-	// Read the file into a byte slice
-	processFile(path, func(word string) {
-		wordSet[word] = struct{}{}
-	})
-	return wordSet
-}
+const wordSetPath = "assets/word-bank.txt"
+const essayUrlsPath = "assets/endg-urls.txt"
 
 func main() {
-	wordSet := GenerateWordSet("assets/word-bank.txt")
-	// urls := FormatEssayUrls("assets/endg-urls.txt")
-	// processEssays(urls)
+	wordSet := GenerateWordSet(wordSetPath)
+	urls := FormatEssayUrls(essayUrlsPath)
+	// urls := []string{"https://www.engadget.com/2019/08/24/trump-tries-to-overturn-ruling-stopping-him-from-blocking-twitte/"}
+	processEssays(urls)
 	// for _, url := range urls {
 	// 	fmt.Println(url)
 	// }

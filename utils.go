@@ -19,3 +19,20 @@ func processFile(filePath string, processLine func(string)) {
 		processLine(scanner.Text())
 	}
 }
+
+func FormatEssayUrls(path string) []string {
+	var urls []string
+	processFile(path, func(line string) {
+		urls = append(urls, line)
+	})
+	return urls
+}
+
+func GenerateWordSet(path string) map[string]struct{} {
+	wordSet := map[string]struct{}{}
+	// Read the file into a byte slice
+	processFile(path, func(word string) {
+		wordSet[word] = struct{}{}
+	})
+	return wordSet
+}
