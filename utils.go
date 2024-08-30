@@ -18,6 +18,7 @@ type BackOff struct {
 	MaxInterval     time.Duration
 	Multiplier      float64
 	MaxElapsedTime  time.Duration
+	FirstCallDelay  time.Duration
 }
 
 // takes in a file path, reads the file and processes each line by the function passed in
@@ -54,11 +55,14 @@ func GenerateWordSet(path string) map[string]struct{} {
 }
 
 // applies our settings we set in main for our exponential backoff
-func ApplySettings(expBackoff *backoff.ExponentialBackOff, b BackOff) {
+func SetupBackoff(b BackOff) *backoff.ExponentialBackOff {
+	expBackoff := backoff.NewExponentialBackOff()
 	expBackoff.InitialInterval = b.InitialInterval
 	expBackoff.MaxInterval = b.MaxInterval
 	expBackoff.Multiplier = b.Multiplier
 	expBackoff.MaxElapsedTime = b.MaxElapsedTime
+
+	return expBackoff
 }
 
 // https://stackoverflow.com/questions/27117896/how-to-pretty-print-variables

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/schollz/progressbar/v3"
@@ -91,8 +92,13 @@ func (wp *WorkerPool) AddJob(url string) {
 // Worker method for processing Jobs
 func (w *Worker) StartWork(wg *sync.WaitGroup, wp *WorkerPool) {
 	defer wg.Done()
+
 	for url := range w.Jobs {
-		// Define a function to perform the HTTP request and parsing
+
+		//we want an initial delay so were not hammering the external api and get locked out
+		time.Sleep(backOffIntervals.FirstCallDelay)
+
+		// request function to pass into the backoff.Retry function
 		request := func() error {
 			cleanedEssay, err, retry := fetchAndProcessEssay(url)
 			if retry {
@@ -105,9 +111,8 @@ func (w *Worker) StartWork(wg *sync.WaitGroup, wp *WorkerPool) {
 		}
 
 		// Create a new exponential backoff instance
-		expBackoff := backoff.NewExponentialBackOff()
+		expBackoff := SetupBackoff(backOffIntervals)
 
-		ApplySettings(expBackoff, backOffIntervals)
 		// Use the backoff.Retry function to handle retries
 		err := backoff.Retry(request, backoff.WithMaxRetries(expBackoff, 5))
 		if err != nil {
