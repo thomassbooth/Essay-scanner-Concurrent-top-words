@@ -31,7 +31,7 @@ func (wc *WordCounter) CountWords(essay string) {
 		formatWord := strings.ToLower(word)
 
 		// check if its all letters and more than 3 characters
-		if len(formatWord) >= 3 && isAlphabetic(formatWord) {
+		if len(formatWord) >= minWordLen && isAlphabetic(formatWord) {
 			if _, ok := wc.wordSet[formatWord]; ok {
 				wc.countMap[formatWord]++
 			}

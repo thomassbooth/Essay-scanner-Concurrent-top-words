@@ -8,9 +8,6 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
-const workers = 4
-const maxWords = 10
-
 type Worker struct {
 	id      int
 	Jobs    <-chan string
@@ -109,6 +106,8 @@ func (w *Worker) StartWork(wg *sync.WaitGroup, wp *WorkerPool) {
 
 		// Create a new exponential backoff instance
 		expBackoff := backoff.NewExponentialBackOff()
+
+		ApplySettings(expBackoff, backOffIntervals)
 		// Use the backoff.Retry function to handle retries
 		err := backoff.Retry(request, backoff.WithMaxRetries(expBackoff, 5))
 		if err != nil {

@@ -13,6 +13,7 @@ import (
 // this removes all punctuation from the essay so we can split
 var nonAlphanumericRegex = regexp.MustCompile(`[^a-zA-Z0-9' ]+`)
 
+// cleans our essay of all punctuation
 func cleanEssay(str string) string {
 	return nonAlphanumericRegex.ReplaceAllString(str, "")
 }
