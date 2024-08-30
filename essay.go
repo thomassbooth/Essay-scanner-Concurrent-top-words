@@ -1,12 +1,50 @@
 package main
 
 import (
+	"fmt"
+	"io"
+	"net/http"
+	"regexp"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
-// Function to extract text from HTML, focusing on <div class="caas-body">
+// this removes all punctuation from the essay so we can split
+var nonAlphanumericRegex = regexp.MustCompile(`[^a-zA-Z0-9' ]+`)
+
+func cleanEssay(str string) string {
+	return nonAlphanumericRegex.ReplaceAllString(str, "")
+}
+
+func fetchAndProcessEssay(url string) (string, error, bool) {
+	response, err := http.Get(url)
+	if err != nil {
+		return "", fmt.Errorf("failed to fetch %s: %v", url, err), false
+	}
+	defer response.Body.Close()
+
+	// if our status code is 999 this means weve been rate limited, so retry
+	if response.StatusCode == 999 {
+		return "", fmt.Errorf("received 999 error for %s", url), true
+		// other status codes that arent 200 are errors and we dont wanna retry
+	} else if response.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("received non-200 response %d for %s", response.StatusCode, url), false
+	}
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read body of %s: %v", url, err), false
+	}
+
+	// we have got our raw essay text, now we need to clean it up
+	text := ParseHTMLFile(string(body))
+	cleanedEssay := cleanEssay(text)
+	// fmt.Println(cleanedEssay)
+	return cleanedEssay, nil, false
+}
+
+// Extract text from HTML, focusing on <div class="caas-body">
 func ParseHTMLFile(htmlContent string) string {
 	doc, err := html.Parse(strings.NewReader(htmlContent))
 	if err != nil {
@@ -49,7 +87,6 @@ func FindPTags(node *html.Node) string {
 			// Ignore any nested divs
 			continue
 		}
-
 		// If it's a <p> tag, extract the text
 		if c.Data == "p" {
 			result += PTagDFS(c) // Add a newline to separate paragraphs
@@ -69,10 +106,4 @@ func PTagDFS(node *html.Node) string {
 	}
 
 	return result
-}
-
-// Count words in the text
-func countWords(text string) int {
-	words := strings.Fields(text)
-	return len(words)
 }

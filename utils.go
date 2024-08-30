@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// takes in a file path, reads the file and processes each line by the function passed in
 func processFile(filePath string, processLine func(string)) {
 	fileContent, err := os.ReadFile(filePath)
 	if err != nil {
@@ -20,6 +21,7 @@ func processFile(filePath string, processLine func(string)) {
 	}
 }
 
+// takes in a file path and returns a slice of urls
 func FormatEssayUrls(path string) []string {
 	var urls []string
 	processFile(path, func(line string) {
@@ -28,6 +30,7 @@ func FormatEssayUrls(path string) []string {
 	return urls
 }
 
+// takes in a file path and returns a set of words
 func GenerateWordSet(path string) map[string]struct{} {
 	wordSet := map[string]struct{}{}
 	// Read the file into a byte slice
