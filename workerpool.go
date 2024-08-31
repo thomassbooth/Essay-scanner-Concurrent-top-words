@@ -27,6 +27,7 @@ type WorkerPool struct {
 	progressMutex sync.Mutex
 }
 
+// create our worker pool
 func NewWorkerPool(noWorkers int, noJobs int, wordCounter *WordCounter) *WorkerPool {
 	// we create a channel that holds all the jobs that the workers need to complete
 	jobs := make(chan string, noJobs)
@@ -40,10 +41,9 @@ func NewWorkerPool(noWorkers int, noJobs int, wordCounter *WordCounter) *WorkerP
 		Jobs:        jobs,
 		Results:     results,
 		totalJobs:   noJobs,
+		progressBar: progressbar.Default(int64(noJobs)),
 		WordCounter: wordCounter,
 	}
-	// initialise our progress bar
-	pool.progressBar = progressbar.Default(int64(noJobs))
 
 	// create our workers
 	for i := 0; i < noWorkers; i++ {
@@ -60,6 +60,7 @@ func NewWorkerPool(noWorkers int, noJobs int, wordCounter *WordCounter) *WorkerP
 	return pool
 }
 
+// lock progress and add to the progress bar and jobCounter
 func (wp *WorkerPool) UpdateProgress() {
 	//lock our progress so we dont have multiple workers trying to update it at the same time
 	wp.progressMutex.Lock()

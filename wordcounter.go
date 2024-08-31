@@ -39,6 +39,7 @@ func (wc *WordCounter) CountWords(essay string) {
 	}
 }
 
+// returns the top k words from the countMap
 func (wc *WordCounter) GetTopKWords(k int) []WordCount {
 	for word, count := range wc.countMap {
 		heap.Push(wc.heap, WordCount{word, count})
