@@ -38,8 +38,9 @@ func fetchAndProcessEssay(url string) (string, error, bool) {
 		return "", fmt.Errorf("failed to read body of %s: %v", url, err), false
 	}
 
-	// we have got our raw essay text, now we need to clean it up
+	// Traverse through our html and extract the essay in string form
 	text := ParseHTMLFile(string(body))
+	// we have got our raw essay text, now we need to clean it up
 	cleanedEssay := cleanEssay(text)
 	// fmt.Println(cleanedEssay)
 	return cleanedEssay, nil, false
